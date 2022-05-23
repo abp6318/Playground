@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/abp6318/Playground#readme",
   "dependencies": {
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "prompt-sync": "^4.2.0"
   }
 }

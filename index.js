@@ -24,17 +24,28 @@ console.log("Running playground...");
 
 
 const axios = require('axios').default;
+const prompt = require('prompt-sync')();
 
-axios.get('https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/Puttlemar?api_key='+KEY)
-  .then(function (response) {
-    // handle success
-    console.log(response);
-  })
-  .catch(function (error) {
-    // handle error
-    console.log(error);
-  })
-  .then(function () {
-    // always executed
-  });
+let key = "";
+
+if(process.argv.length == 2){
+	key += prompt('Enter your Riot API key: ');
+}else if(process.argv.length == 3){
+	key += process.argv[2];
+}
+
+
+
+axios.get('https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/Puttlemar?api_key='+key)
+	.then(function (response) {
+		// handle success
+		console.log(response.data);
+	})
+	.catch(function (error) {
+		// handle error
+		console.log(error);
+	})
+	.then(function(){
+		// always executed
+	})
 
