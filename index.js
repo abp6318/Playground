@@ -1,30 +1,21 @@
 console.log("Running playground...");
 
 // prompt/inform user to regen key: https://developer.riotgames.com/
-// start loop
-	// 1. user info
-		// prompt for summoner name
-		// get account
-		// display rank + lp
-		// display link to lolchess
-		// display ...
-	// 2. user last 20
-		// prompt for summoner name
-		// get last 20 games
-		// display game IDs + placement + lp change
-		// display average placement
-		// display stem and leaf plot
-	// 3. user last 1
-	// ...
-
-
-
-
-
+// fetch top 5 players
+// foreach player
+	// display player name
+	// display lp
+	// from last 20 games
+		// top 10 active traits played & average placement with each trait
+		// average placement
+		// # of wins
+		// # of top 4s
+		// # of bot 4s
 
 
 const axios = require('axios').default;
 const prompt = require('prompt-sync')();
+const numberOfPlayers = 1;
 
 let key = "";
 
@@ -34,18 +25,40 @@ if(process.argv.length == 2){
 	key += process.argv[2];
 }
 
+let entries = getTopPlayers();
+console.log(entries)
+// for (let index = 0; index < numberOfPlayers; index++) {
+// 	getSummoner(entries[index].summonerName);
+// }
 
 
-axios.get('https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/Puttlemar?api_key='+key)
+
+
+
+
+
+// returns array of all challenger players in descending order
+function getTopPlayers(){
+	console.log("Getting top players...");
+	axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
 	.then(function (response) {
-		// handle success
-		console.log(response.data);
+		let e = response.data.entries;
+		e = e.sort((a, b) => parseFloat(b.leaguePoints) - parseFloat(a.leaguePoints));
+		return "hi";
 	})
 	.catch(function (error) {
-		// handle error
 		console.log(error);
 	})
-	.then(function(){
-		// always executed
-	})
+}
 
+// returns puuid
+function getSummoner(summonerName){
+	console.log("Getting summoner "+summonerName);
+	axios.get("https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/"+summonerName+"?api_key="+key)
+	.then(function (response) {
+		return response.data.puuid;
+	})
+	.catch(function (error) {
+		console.log(error);
+	})
+}
