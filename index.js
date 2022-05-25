@@ -25,34 +25,62 @@ if(process.argv.length == 2){
 	key += process.argv[2];
 }
 
-let entries = getTopPlayers();
-console.log(entries)
+// let entries = getTopPlayers();
+
+// console.log(entries);
+
 // for (let index = 0; index < numberOfPlayers; index++) {
-// 	getSummoner(entries[index].summonerName);
+// 	console.log(getSummoner(entries[index].summonerName));
 // }
 
 
 
 
+const makeRequest = async () => { 
+    try {
+    const response = await axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
+		.then(function (response) {
+			let e = response.data.entries;
+			e = e.sort((a, b) => parseFloat(b.leaguePoints) - parseFloat(a.leaguePoints));
+			// return e;
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
+    if (response.status === 200) { // response - object, eg { status: 200, message: 'OK' }
+      console.log('success stuff');
+     return true;
+    }
+    return false;
+   } catch (err) {
+     console.error(err)
+     return false;
+   }
+}
+
+console.log(makeRequest);
+
 
 
 
 // returns array of all challenger players in descending order
-function getTopPlayers(){
+async function getTopPlayers(){
 	console.log("Getting top players...");
-	axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
-	.then(function (response) {
-		let e = response.data.entries;
-		e = e.sort((a, b) => parseFloat(b.leaguePoints) - parseFloat(a.leaguePoints));
-		return "hi";
-	})
-	.catch(function (error) {
-		console.log(error);
+	return new Promise((resolve, reject) => {
+		axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
+		.then(function (response) {
+			let e = response.data.entries;
+			e = e.sort((a, b) => parseFloat(b.leaguePoints) - parseFloat(a.leaguePoints));
+			return e;
+		})
+		.catch(function (error) {
+			console.log(error);
+		})
 	})
 }
 
 // returns puuid
-function getSummoner(summonerName){
+function getSummoner(summonerName, res){
 	console.log("Getting summoner "+summonerName);
 	axios.get("https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/"+summonerName+"?api_key="+key)
 	.then(function (response) {
