@@ -15,9 +15,12 @@ console.log("Running playground...");
 
 const axios = require('axios').default;
 const prompt = require('prompt-sync')();
-const numberOfPlayers = 1;
+const fs = require('fs');
+
+const numberOfPlayers = 2;
 const start = 0;
 const count = 1;
+let toOutfile = "";
 
 let key = "";
 
@@ -42,7 +45,12 @@ axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
 								axios.get("https://americas.api.riotgames.com/tft/match/v1/matches/"+matchId+"?api_key="+key)
 									.then(function (response) {
 										console.log(response.data);	
-										
+										// toOutfile += JSON.stringify(response.data);
+										fs.appendFile('./out.txt', JSON.stringify(response.data), err => {
+											if (err) {
+												console.error(err);
+											}
+										});
 									})
 									.catch(function (error) {
 										console.log(error);
@@ -62,3 +70,9 @@ axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
 	.catch(function (error) {
 		console.log(error);
 	});
+
+// fs.writeFile('./out.txt', toOutfile, err => {
+// 	if (err) {
+// 		console.error(err);
+// 	}
+// });
