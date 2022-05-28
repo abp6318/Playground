@@ -30,6 +30,8 @@ if(process.argv.length == 2){
 	key += process.argv[2];
 }
 
+fs.truncate('./out.txt', 0, function(){console.log('Emptying out.txt content...')})
+
 axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
 	.then(function (response) {
 		let entries = response.data.entries;
@@ -44,9 +46,9 @@ axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
 							response.data.forEach(matchId => {
 								axios.get("https://americas.api.riotgames.com/tft/match/v1/matches/"+matchId+"?api_key="+key)
 									.then(function (response) {
-										console.log(response.data);	
+										// console.log(response.data);	
 										// toOutfile += JSON.stringify(response.data);
-										fs.appendFile('./out.txt', JSON.stringify(response.data), err => {
+										fs.appendFile('./out.txt', JSON.stringify(response.data.info) + "\n", err => {
 											if (err) {
 												console.error(err);
 											}
