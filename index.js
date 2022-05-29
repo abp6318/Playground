@@ -12,14 +12,43 @@ console.log("Running playground...");
 		// # of top 4s
 		// # of bot 4s
 
+/**
+
+Prompt/flag for top x # of users
+Prompt/flag for estimated start time (Epoch timestamp in seconds)
+Prompt/flag for estimated end time (Epoch timestamp in seconds)
+
+Need to consider clearing ./patch/ directory of contents, or maybe checking for existing folders
+
+foreach puuid/
+    continueLoop = true;
+    startCounter = 0;
+    while/ continueLoop == true/
+        Get game (puuid; start=startCounter; count=1)
+        fetch game
+        if/ game's patch == specified patch/
+            append full game data to (file=puuid) in (directory="./patch/)
+            set start to true
+        /else/
+            if/ start == true/
+                continueLoop = false;
+        /
+        startCounter += 1
+        sleep for 1.5 seconds
+    /
+/
+
+
+ */
+
 
 const axios = require('axios').default;
 const prompt = require('prompt-sync')();
 const fs = require('fs');
 
-const numberOfPlayers = 2;
+const numberOfPlayers = 1;
 const start = 0;
-const count = 1;
+const count = 10;
 let toOutfile = "";
 
 let key = "";
@@ -46,9 +75,12 @@ axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
 							response.data.forEach(matchId => {
 								axios.get("https://americas.api.riotgames.com/tft/match/v1/matches/"+matchId+"?api_key="+key)
 									.then(function (response) {
-										// console.log(response.data);	
-										// toOutfile += JSON.stringify(response.data);
-										fs.appendFile('./out.txt', JSON.stringify(response.data.info) + "\n", err => {
+										let gameInfo = response.data.info.participants;
+										let res = gameInfo.filter(function(elem){ 
+											if(elem.puuid == puuid) return elem;
+										});
+										// fs.appendFile('./out.txt', JSON.stringify(response.data.info) + "\n", err => {
+										fs.appendFile('./out.txt', JSON.stringify(res) + "\n", err => {
 											if (err) {
 												console.error(err);
 											}
