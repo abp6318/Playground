@@ -27,7 +27,7 @@ foreach puuid/
         Get game (puuid; start=startCounter; count=1)
         fetch game
         if/ game's patch == specified patch/
-            append full game data to (file=puuid) in (directory="./patch/)
+            append full game data to (file=puuid) in (directory="./patch/date/)
             set start to true
         /else/
             if/ start == true/
@@ -48,7 +48,7 @@ const fs = require('fs');
 
 const numberOfPlayers = 1;
 const start = 0;
-const count = 10;
+const count = 5;
 let toOutfile = "";
 
 let key = "";
@@ -72,25 +72,27 @@ axios.get('https://na1.api.riotgames.com/tft/league/v1/challenger?api_key='+key)
 					let puuid = response.data.puuid;
 					axios.get("https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/"+puuid+"/ids?start="+start+"&count="+count+"&api_key="+key)
 						.then(function (response) {
-							response.data.forEach(matchId => {
-								axios.get("https://americas.api.riotgames.com/tft/match/v1/matches/"+matchId+"?api_key="+key)
-									.then(function (response) {
-										let gameInfo = response.data.info.participants;
-										let res = gameInfo.filter(function(elem){ 
-											if(elem.puuid == puuid) return elem;
-										});
-										// fs.appendFile('./out.txt', JSON.stringify(response.data.info) + "\n", err => {
-										fs.appendFile('./out.txt', JSON.stringify(res) + "\n", err => {
-											if (err) {
-												console.error(err);
-											}
-										});
-									})
-									.catch(function (error) {
-										console.log(error);
-									})
-							});
-							
+							for (let i = 0; i < response.data.length; i++) {								
+								setTimeout(function(i){
+									console.log("Fetching matchId="+response.data[i]);
+									axios.get("https://americas.api.riotgames.com/tft/match/v1/matches/"+response.data[i]+"?api_key="+key)
+										.then(function (response) {
+											let gameInfo = response.data.info.participants;
+											let res = gameInfo.filter(function(elem){ 
+												if(elem.puuid == puuid) return elem;
+											});
+											// fs.appendFile('./out.txt', JSON.stringify(response.data.info) + "\n", err => {
+											fs.appendFile('./out.txt', JSON.stringify(res) + "\n", err => {
+												if (err) {
+													console.error(err);
+												}
+											});
+										})
+										.catch(function (error) {
+											console.log(error);
+										})
+								}, 1500 * i, i);
+							}
 						})
 						.catch(function (error) {
 							console.log(error);
